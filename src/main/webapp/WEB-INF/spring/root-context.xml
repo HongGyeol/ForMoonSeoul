@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	
+	<!-- 웹 환경에 독립적인 @Service, @Repository가 선언된 클래스 bean으로 등록 -->
+	<!-- <context:component-scan base-package="com.project.travel.model"></context:component-scan> -->
+	<context:component-scan base-package="com.project.travel.model.impl.mybatis"></context:component-scan>
+
+	<!-- JNDI를 통해 DataSource객체 획득 -->
+	<bean id="DataSourcesByJNDI" class="org.springframework.jndi.JndiObjectFactoryBean">
+    	<property name="jndiName" value="java:comp/env/jdbc/myoracle"/>
+	</bean>
+	
+	<!-- SqlSessionFactory -->
+	<bean id="SqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="DataSourcesByJNDI"></property>
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+		<!--<property name="mapperLocations" value="classpath:/mapper/t_board-SQL.xml"></property>-->
+	</bean>
+	
+	<!-- SqlSessionTemplate -->
+	<bean id="SqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<!-- 생성자 의존성 주입  -->
+		<constructor-arg ref="SqlSessionFactory"></constructor-arg>
+	</bean>
+	
+</beans>

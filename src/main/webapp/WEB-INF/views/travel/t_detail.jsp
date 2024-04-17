@@ -1,0 +1,256 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+<!-- Favicon -->
+<link href="img/favicon.ico" rel="icon">
+
+<!-- Google Web Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+
+<!-- Icon Font Stylesheet -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Libraries Stylesheet -->
+<link href="/resources/lib/animate/animate.min.css" rel="stylesheet">
+<link href="/resources/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+<!-- Bootstrap Stylesheet -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+<!-- Template Stylesheet -->
+<link href="/resources/css/style.css" rel="stylesheet">
+
+<!-- css 적용 -->
+<link href="/resources/css/t_detail.css" rel="stylesheet">
+
+<!-- 카카오 Map API 적용 -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=dab488255a2b2f746d8ae25c7f77ee78&libraries=services"></script>
+
+<!-- script 적용 -->
+<script type="text/javascript" src="/resources/js/t_board.js"></script>
+
+<title></title>
+</head>
+<body>
+
+	<!-- Navbar Start -->
+	<header>
+		<c:import url="./header.jsp"></c:import>
+	</header>
+	<!-- Navbar End -->
+
+
+	<!-- Carousel Start -->
+	<div class="dd"></div>
+
+
+	<main class="container-fluid px-0 mb-5" id="main">
+		
+		<%-- 카카오 지도 api에서 사용할 변수 --%>
+		<input type="hidden" id="ad" value="${address}">
+		<input type="hidden" id="tt" value="${title}">
+		
+		<h5 class="present_location">
+			<img alt="" src="/resources/img/home.png" class="where"> > 여행정보 > 
+			<c:choose>
+				<c:when test="${ct_u eq 0}"> 축제&행사 > </c:when>
+				<c:when test="${ct_u eq 1}"> 볼거리 > </c:when>
+				<c:otherwise> 먹거리 > </c:otherwise>
+			</c:choose>
+			<c:if test="${ct_d eq 0}">진행중</c:if>
+			<c:if test="${ct_d eq 1}">진행예정</c:if>
+			<c:if test="${ct_d eq 2}">진행완료</c:if>
+			<c:if test="${ct_d eq 3}">명소</c:if>
+			<c:if test="${ct_d eq 4}">자연&경관</c:if>
+			<c:if test="${ct_d eq 5}">엔터테인먼트</c:if>
+			<c:if test="${ct_d eq 6}">카페&디저트</c:if>
+			<c:if test="${ct_d eq 7}">식사</c:if>
+			<c:if test="${ct_d eq 8}">주점</c:if>
+		</h5>
+		
+		<br>
+		<div class="float-right">
+			<div class="board_btn">
+				<a href="/t_update.traveldo?num=${num}&ct_u=${ct_u}&ct_d=${ct2}&pageNum=${pageNum}&searchKeyword=${searchKeyword}&date_start=${date_start}&date_end=${date_end}" class="btn">
+					게시글 수정
+				</a>
+			</div>
+			<div class="board_btn">
+				<a href="/t_delete_proc.traveldo?num=${num}&ct_u=${ct_u}&ct_d=${ct2}" class="btn" onclick="deleteCheck()">
+					게시글 삭제		    
+				</a>
+			</div>
+			<div class="board_btn">
+				<c:choose>
+					<c:when test="${ct_u eq 0}">
+				<a href="/t_list.traveldo?ct_u=${ct_u}&ct_d=${ct2}&pageNum=${pageNum}&searchKeyword=${searchKeyword}&date_start=${date_start}&date_end=${date_end}" class="btn">
+					</c:when>
+					<c:otherwise>
+				<a href="/t_list.traveldo?ct_u=${ct_u}&ct_d=${ct2}&pageNum=${pageNum}&searchKeyword=${searchKeyword}" class="btn">
+					</c:otherwise>
+				</c:choose>
+					게시글 목록		    
+				</a>
+			</div>
+		</div>
+		<div class="board_main">
+			<h1 class="page_title" align="center">${title}</h1>
+			<br>
+			<div class="board_dd">	
+				<div class="board_date_line"></div>
+				<c:choose>
+					<c:when test="${update_day ne null}">
+				<div class="board_date">제작일 : ${write_day} / 수정일 : ${update_day}</div>
+					</c:when>
+					<c:otherwise>
+				<div class="board_date">제작일 : ${write_day}</div>
+					</c:otherwise>
+				</c:choose>
+				
+			</div>
+			<br>
+			<div class="board_screen">
+				<nav class="left_null">&nbsp;</nav>    
+				<nav class="right_null">&nbsp;</nav>
+				<div class="board_img">
+					<img alt="" src="${filepath}" class="img">
+				</div>
+			</div>
+			
+			
+			<div class="content">${content}</div>
+			
+			<div class="detail">
+				<dl class="detail_dl">
+					<dt class="detail_dt">
+						 전화번호
+	                </dt>
+					<dd class="detail_dd">
+    					${tel}
+    				</dd>
+				</dl>
+				
+				<c:if test="${ct_u ne 2}">
+				
+				<dl class="detail_dl">
+					<dt class="detail_dt">
+						 웹사이트
+	                </dt>
+					<dd class="detail_dd">
+    					<a href="${uri}" class="website" target="_blank">
+    						웹사이트 보기→
+    					</a>
+    				</dd>
+				</dl>
+				<dl class="detail_dl">
+					<dt class="detail_dt">
+						 이용 요금
+	                </dt>
+					<dd class="detail_dd">
+    					${price}
+    				</dd>
+				</dl>
+				
+				</c:if>
+				
+				<c:if test="${ct_u eq 2}">
+				
+				<dl class="detail_dl">
+					<dt class="detail_dt">
+						 대표 메뉴
+	                </dt>
+					<dd class="detail_dd">
+    					${bestmenu}
+    				</dd>
+				</dl>
+				
+				</c:if>
+				
+				<c:if test="${ct_u eq 0}">
+				
+				<dl class="detail_dl">
+					<dt class="detail_dt">
+						 행사기간
+	                </dt>
+					<dd class="detail_dd">
+    					${time_s}
+    					&nbsp; ~ &nbsp;
+    					${time_e}
+    				</dd>
+				</dl>
+				
+				</c:if>
+				
+				<dl class="detail_dl">
+					<dt class="detail_dt">
+						 운영일
+	                </dt>
+					<dd class="detail_dd">
+    					${open_day}
+    				</dd>
+				</dl>
+				<dl class="detail_dl">
+					<dt class="detail_dt">
+						주소
+	                </dt>
+					<dd class="detail_dd">
+    					${zipcode}&nbsp;${address}
+    				</dd>
+				</dl>
+				<dl class="detail_dl">
+					<dt class="detail_dt">
+						 교통 정보
+	                </dt>
+					<dd class="detail_dd">
+    					${traffic}
+    				</dd>
+				</dl>
+			</div>
+			
+			<div class="bottom_line">	
+				<div class="board_date_line"></div>
+			</div>
+			
+			
+			<div class="map" id="map">
+				<script type="text/javascript" src="/resources/js/t_map.js"></script>
+			</div>
+			
+		</div>
+		
+	</main>
+
+
+	<!-- Carousel End -->
+
+	<!-- Copyright Start -->
+	<footer>
+		<c:import url="./footer.jsp"></c:import>
+	</footer>
+	<!-- Copyright End -->
+	
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+	<!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="/resources/lib/wow/wow.min.js"></script>
+    <script src="/resources/lib/easing/easing.min.js"></script>
+    <script src="/resources/lib/waypoints/waypoints.min.js"></script>
+    <script src="/resources/lib/owlcarousel/owl.carousel.min.js"></script>
+    <!-- Template JavaScript -->
+    <script src="/resources/js/main.js"></script>
+	<!-- Bootstrap Script -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+</body>
+</html>

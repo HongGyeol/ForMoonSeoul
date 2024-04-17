@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+	<!-- typeAlias태그의 type속성값에 별칭을 붙여 sql mapper xml파일에서 별칭을 사용 -->
+	<typeAliases>
+		<typeAlias alias="vo" type="com.project.travel.model.t_boardVO"></typeAlias>
+		<typeAlias alias="hashmap" type="java.util.HashMap"></typeAlias>
+	</typeAliases>
+	
+	<!-- sql mapper 설정 -->
+	<mappers>
+		<mapper resource="mapper/t_board-SQL.xml"></mapper>
+	</mappers>
+
+
+</configuration>  

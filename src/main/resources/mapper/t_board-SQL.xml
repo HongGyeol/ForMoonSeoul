@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="t_board">
+
+	<insert id="insertBoard" parameterType="vo">
+		INSERT INTO T_BOARD(NUM, CT_U, CT_D, TITLE, CONTENT, ZIPCODE, ADDRESS, TRAFFIC, OPEN_DAY, TEL, WRITER, FILEPATH,
+							<choose>
+								<when test="ct_u == 0">
+									time_s, time_e, uri, price)
+								</when>
+								<when test="ct_u == 1">
+									uri, price)
+								</when>
+								<otherwise>
+									bestmenu)
+								</otherwise>
+							</choose>
+		VALUES(T_BOARD_SEQ.NEXTVAL, #{ct_u}, #{ct_d}, #{title}, #{content}, #{zipcode}, 
+		       #{address}, #{traffic}, #{open_day}, #{tel}, #{writer}, #{filepath},
+		       <choose>
+		       		<when test="ct_u == 0">
+		       			#{time_s}, #{time_e}, #{uri}, #{price}) 
+		       		</when>
+		       		<when test="ct_u == 1">
+		       			#{uri}, #{price})
+		       		</when>       
+		       		<otherwise>
+		       			#{bestmenu})
+		       		</otherwise>
+		       </choose>
+	</insert>
+	
+	<update id="deleteBoard" parameterType="vo">
+		UPDATE T_BOARD
+		SET DELETE_YN='Y', DELETE_DAY=SYSDATE
+		WHERE NUM = #{num}
+	</update>
+	
+	<update id="updateBoard" parameterType="vo">
+		UPDATE T_BOARD
+		SET CT_D=#{ct_d}, TITLE=#{title}, CONTENT=#{content}, ZIPCODE=#{zipcode}, ADDRESS=#{address},
+		    TRAFFIC=#{traffic}, OPEN_DAY=#{open_day}, TEL=#{tel}, UPDATER=#{updater}, UPDATE_DAY=SYSDATE,
+		    <if test='!filepath.equals("")'>
+		    	FILEPATH=#{filepath}, 
+		    </if>
+		    <choose>
+		    	<when test="ct_u == 0">
+		    		TIME_S=#{time_s}, TIME_E=#{time_e}, URI=#{uri}, PRICE=#{price} 
+		    	</when>
+		    	<when test="ct_u == 1">
+		    		URI=#{uri}, PRICE=#{price}
+		    	</when>
+		    	<otherwise>
+		    		BESTMENU=#{bestmenu}
+		    	</otherwise>
+		    </choose>
+		WHERE NUM = #{num}
+	</update>
+	
+	<select id="getBoardCount" parameterType="hashmap" resultType="Integer">
+		SELECT COUNT(*)
+		FROM T_BOARD
+		WHERE CT_U=#{vo.ct_u} AND DELETE_YN='N'
+		<if test="vo.ct_d != 9">
+			  AND CT_D=#{vo.ct_d} 
+		</if>
+		<if test='searchKeyword != null and !searchKeyword.equals("")'>
+			  AND UPPER(TITLE) LIKE '%' || UPPER(#{searchKeyword}) || '%'
+		</if>
+		<if test='(date_start != null and !date_start.equals("")) and (date_end != null and date_end.equals(""))'>
+			<!-- 부등호를 문자열로 인식시키기 위해 <![CDATA[내용]]> 를 사용한다 -->
+			<![CDATA[			  
+			  AND ( (#{date_start}>=TO_CHAR(TIME_S, 'YYYY-MM-DD')) AND (#{date_start}<=TO_CHAR(TIME_E, 'YYYY-MM-DD')) )
+			]]>
+		</if>
+		<if test='(date_start != null and date_start.equals("")) and (date_end != null and !date_end.equals(""))'>
+			<![CDATA[
+			  AND ( (#{date_end}>=TO_CHAR(TIME_S, 'YYYY-MM-DD')) AND (#{date_end}<=TO_CHAR(TIME_E, 'YYYY-MM-DD')) )
+			]]>
+		</if>
+		<if test='(date_start != null and !date_start.equals("")) and (date_end != null and !date_end.equals(""))'>
+			<![CDATA[
+			  AND ( 
+			  	  	( (#{date_start}>=TO_CHAR(TIME_S, 'YYYY-MM-DD')) AND (#{date_start}<=TO_CHAR(TIME_E, 'YYYY-MM-DD')) )
+			  	  	OR
+			  	  	( (#{date_end}>=TO_CHAR(TIME_S, 'YYYY-MM-DD')) AND (#{date_end}<=TO_CHAR(TIME_E, 'YYYY-MM-DD')) )
+			      )
+			]]>
+		</if>
+	</select>
+	
+	<select id="getBoardList" parameterType="hashmap" resultType="vo">
+		SELECT * 
+		FROM (SELECT ROWNUM RNUM, NUM, TITLE, CONTENT, FILEPATH
+		<if test="vo.ct_u == 0">
+				     , TIME_S, TIME_E      
+		</if>
+		      FROM (SELECT *
+		            FROM T_BOARD
+		            WHERE CT_U=#{vo.ct_u} AND DELETE_YN='N'
+		            <if test="vo.ct_d != 9">
+		                  AND CT_D=#{vo.ct_d}
+		            </if>
+		            <if test='searchKeyword != null and !searchKeyword.equals("")'>
+		            	  AND UPPER(TITLE) LIKE '%' || UPPER(#{searchKeyword}) || '%'
+		            </if>
+		            <if test='(date_start != null and !date_start.equals("")) and (date_end != null and date_end.equals(""))'>
+						<!-- 부등호를 문자열로 인식시키기 위해 <![CDATA[내용]]> 를 사용한다 -->
+						<![CDATA[			  
+						  AND ( (#{date_start}>=TO_CHAR(TIME_S, 'YYYY-MM-DD')) AND (#{date_start}<=TO_CHAR(TIME_E, 'YYYY-MM-DD')) )
+						]]>
+					</if>
+					<if test='(date_start != null and date_start.equals("")) and (date_end != null and !date_end.equals(""))'>
+						<![CDATA[
+						  AND ( (#{date_end}>=TO_CHAR(TIME_S, 'YYYY-MM-DD')) AND (#{date_end}<=TO_CHAR(TIME_E, 'YYYY-MM-DD')) )
+						]]>
+					</if>
+					<if test='(date_start != null and !date_start.equals("")) and (date_end != null and !date_end.equals(""))'>
+						<![CDATA[
+						  AND ( 
+						  	  	( (#{date_start}>=TO_CHAR(TIME_S, 'YYYY-MM-DD')) AND (#{date_start}<=TO_CHAR(TIME_E, 'YYYY-MM-DD')) )
+						  	  	OR
+						  	  	( (#{date_end}>=TO_CHAR(TIME_S, 'YYYY-MM-DD')) AND (#{date_end}<=TO_CHAR(TIME_E, 'YYYY-MM-DD')) )
+						      )
+						]]>
+					</if>
+		            ORDER BY NUM DESC
+		            )
+		      )
+		 WHERE RNUM BETWEEN #{startRow} AND #{endRow}
+	</select>
+	
+	<select id="getBoard" parameterType="vo" resultType="vo">
+		SELECT *
+		FROM T_BOARD
+		WHERE NUM = #{num}
+	</select> 
+	
+	<select id="checkCt_d" parameterType="hashmap" resultType="vo">
+		SELECT NUM
+		FROM T_BOARD
+		WHERE CT_D=#{ct_d} AND DELETE_YN='N'
+		<if test="ct_d == 0">
+			  AND #{today}>TO_CHAR(TIME_E, 'YYYY-MM-DD')
+		</if>
+		<if test="ct_d == 1">
+			  AND #{today}>=TO_CHAR(TIME_S, 'YYYY-MM-DD')
+		</if>
+	</select>
+	
+	<update id="updateCt_d0to2" parameterType="java.util.List">
+		UPDATE T_BOARD
+		SET CT_D=2
+		WHERE NUM IN
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item.NUM}
+		</foreach>
+	</update>
+	
+	<update id="updateCt_d1to0" parameterType="java.util.List">
+		UPDATE T_BOARD
+		SET CT_D=0
+		WHERE NUM IN
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item.NUM}
+		</foreach>
+	</update>
+
+</mapper>
